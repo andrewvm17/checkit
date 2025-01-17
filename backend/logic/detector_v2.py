@@ -15,6 +15,7 @@ def detect_lines_with_new_algorithm(input_image):
       5) Canny edge detection
       6) Another morph CLOSE
       7) HoughLinesP
+      8)
     Returns:
       edges   - the post-processed edges
       output  - a blank image with the detected lines drawn
