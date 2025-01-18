@@ -37,8 +37,3 @@ def group_by_dbscan(values, eps=0.5, min_samples=2):
         clusters.append(cluster_vals)
     
     return clusters
-
-
-
-
-

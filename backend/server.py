@@ -4,12 +4,15 @@ import cv2
 import numpy as np
 from PIL import Image
 from flask import Flask, request, jsonify
-from line_detection import api_test
+from logic.detector_v2 import detect_lines_with_new_algorithm
+from flask_cors import CORS
+
 
 app = Flask(__name__)
+CORS(app)
 
-@app.route('/detect-vanishing', methods=['POST'])
-def detect_vanishing():
+@app.route('/get-lines', methods=['POST'])
+def get_lines():
     # 1. Get the file from the POST request
     file = request.files.get('image')
     if not file:
@@ -20,14 +23,27 @@ def detect_vanishing():
     pil_img = Image.open(in_memory_file).convert("RGB")
     cv_img = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
 
-    # 3. Calculate vanishing point
-    vp = get_vanishing_point(cv_img)
+    # 3. Detect lines
+    line = detect_lines_with_new_algorithm(cv_img)
+    
+    if line:
+        # Convert the line tuple to a JSON-serializable format
+        x1 = int(line[0][0])
+        y1 = int(line[0][1])
+        x2 = int(line[1][0])
+        y2 = int(line[1][1])
+        slope = float(line[2])
 
-    if vp:
-        x_vanish, y_vanish = vp
-        return jsonify({"vanishing_point": [x_vanish, y_vanish]})
+        return jsonify({
+            "x1": x1,
+            "y1": y1,
+            "x2": x2,
+            "y2": y2,
+            "slope": slope
+        })
+
     else:
-        return jsonify({"vanishing_point": None})
+        return jsonify({"line": None})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

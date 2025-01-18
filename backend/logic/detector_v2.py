@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import sys
-from line_clustering import group_by_dbscan
+from logic.line_clustering import group_by_dbscan
 import cv2
 import numpy as np
 import imutils
@@ -80,13 +80,13 @@ def detect_lines_with_new_algorithm(input_image):
                 slope_list.append(slope)
 
     clusters = group_by_dbscan(slope_list)
-    
+    longest_lines = []
     for cluster in clusters:
         # Find the longest line in the cluster
         longest_line = None
         max_length = 0
         for line, slope in zip(line_list, slope_list):
-            print(line)
+            
             if slope in cluster:
                 x1, y1 = line[0]
                 x2, y2 = line[1]
@@ -94,7 +94,7 @@ def detect_lines_with_new_algorithm(input_image):
                 if length > max_length:
                     max_length = length
                     longest_line = line
-
+        longest_lines.append(longest_line)
         # Draw the longest line in the cluster
         if longest_line:
             x1, y1= longest_line[0]
@@ -102,8 +102,14 @@ def detect_lines_with_new_algorithm(input_image):
             thickness = 2
             cv2.line(output, (x1, y1), (x2, y2), (255, 255, 255), thickness)
 
-    return closed_edges, output
+    #temp return
+    
+    print(longest_lines[0])
+    return (longest_lines[0])
+    
+    #return closed_edges, output
 
+"""
 def main():
     if len(sys.argv) < 2:
         print("Usage: python3 detector_v2.py <image_path>")
@@ -119,8 +125,8 @@ def main():
     edges, lines_output = detect_lines_with_new_algorithm(image)
 
     # Show results
-    #cv2.imshow("Original", image)
-    #cv2.imshow("Edges (Final)", edges)
+    cv2.imshow("Original", image)
+    cv2.imshow("Edges (Final)", edges)
     cv2.imshow("Lines Output", lines_output)
 
     print("Press any key on the image window to exit.")
@@ -129,3 +135,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+"""
